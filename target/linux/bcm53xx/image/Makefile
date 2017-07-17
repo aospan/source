@@ -133,6 +133,20 @@ define Device/Default
   IMAGE/trx := append-ubi | trx-nand
 endef
 
+define Device/edgecore-ecw7220-l-o
+IMAGES := trx
+IMAGE/trx := append-ubi | trx-nand
+KERNEL := kernel-bin | append-dtb
+endef
+TARGET_DEVICES += edgecore-ecw7220-l-o
+
+define Device/edgecore-ecw7220-l
+IMAGES := trx
+IMAGE/trx := append-ubi | trx-nand
+KERNEL := kernel-bin | append-dtb
+endef
+TARGET_DEVICES += edgecore-ecw7220-l
+
 define Device/asus
   IMAGES := trx
   IMAGE/trx := append-ubi | trx-nand | asus-trx

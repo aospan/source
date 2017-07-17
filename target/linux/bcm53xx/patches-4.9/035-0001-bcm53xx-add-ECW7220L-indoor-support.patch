@@ -1,0 +1,120 @@
+From 0b90cce836e4ac6e766dbd88201f309e0add748e Mon Sep 17 00:00:00 2001
+From: Abylay Ospan <aospan@netup.ru>
+Date: Mon, 17 Jul 2017 06:14:13 +0300
+Subject: [PATCH] [bcm53xx] add ECW7220L indoor support
+
+dts file added
+
+Signed-off-by: Abylay Ospan <aospan@netup.ru>
+---
+ arch/arm/boot/dts/Makefile                       |  1 +
+ arch/arm/boot/dts/bcm4708-edgecore-ecw7220-l.dts | 85 ++++++++++++++++++++++++
+ 2 files changed, 86 insertions(+)
+ create mode 100644 arch/arm/boot/dts/bcm4708-edgecore-ecw7220-l.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 25de8d9..ee0db86 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -103,6 +103,7 @@ dtb-$(CONFIG_ARCH_BCM_5301X) += \
+ 	bcm953012er.dtb \
+ 	bcm953012hr.dtb \
+ 	bcm953012k.dtb \
++	bcm4708-edgecore-ecw7220-l.dtb \
+ 	bcm4708-edgecore-ecw7220-l-o.dtb
+ dtb-$(CONFIG_ARCH_BCM_53573) += \
+ 	bcm47189-tenda-ac9.dtb
+diff --git a/arch/arm/boot/dts/bcm4708-edgecore-ecw7220-l.dts b/arch/arm/boot/dts/bcm4708-edgecore-ecw7220-l.dts
+new file mode 100644
+index 0000000..8d7ccad
+--- /dev/null
++++ b/arch/arm/boot/dts/bcm4708-edgecore-ecw7220-l.dts
+@@ -0,0 +1,85 @@
++/*
++ * Broadcom BCM470X / BCM5301X ARM platform code.
++ * DTS for Edgecore ECW7220-L wifi access point
++ *
++ * Copyright (C) 2017 Abylay Ospan <aospan@netup.ru>
++ *
++ * Licensed under the GNU/GPL. See COPYING for details.
++ */
++
++/dts-v1/;
++
++#include "bcm4708.dtsi"
++
++/ {
++	compatible = "edgecore,ecw7220-l", "brcm,bcm4708";
++	model = "Edgecore ECW7220-L";
++
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++		bootargs = "console=ttyS0,115200 init=/sbin/init debug ubi.mtd=6 root=/dev/ubiblock0_0 rootfstype=squashfs pci=pcie_bus_safe";
++	};
++
++	memory {
++		reg = <0x00000000 0x8000000
++			0x88000000 0x08000000>; //128MB + 128MB = 256MB
++	};
++};
++
++&uart0 {
++	clock-frequency = <62499840>;
++	status = "okay";
++};
++
++&uart1 {
++	clock-frequency = <62499840>;
++	status = "okay";
++};
++
++/* TODO: move to separate file
++ */
++&nand { 
++	nandcs@0 {
++		compatible = "brcm,nandcs";
++		reg = <0>;
++		nand-on-flash-bbt;
++		nand-ecc-step-size = <512>;
++		nand-ecc-strength = <4>;
++
++		partition@0 {
++			label = "boot";
++			reg = <0x00000000 0x100000>;
++			read-only;
++		};
++		partition@1 {
++			label = "nvram";
++			reg = <0x00100000 0x00020000>;
++		};
++		partition@2 {
++			label = "boot_env";
++			reg = <0x00120000 0x00020000>;
++		};
++		partition@3 {
++			label = "log";
++			reg = <0x00140000 0x00040000>;
++		};
++		partition@4 {
++			label = "onie";
++			reg = <0x00180000 0x00500000>;
++		};
++
++		partition@5 {
++			label = "open";
++			reg = <0x00680000 0x07980000>;
++		};
++		partition@6 {
++			label = "ubi_rootfs";
++			reg = <0x00a80000 0x07980000>;
++		};
++	};
++};
+-- 
+2.7.4
+
